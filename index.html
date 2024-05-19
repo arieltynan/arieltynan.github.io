@@ -42,14 +42,14 @@
                 height: 20,
                 dx: 0,
                 dy: 0,
-                vy: 0 // Vertical vel for rectangle
+                vy: 0  // Vertical velocity for the rectangle
             };
 
             function resetRectangle() {
                 rectangle.width = 30 + Math.random() * 20;  // Width between 30 and 50
                 rectangle.height = 20 + Math.random() * 20;  // Height between 20 and 40
                 rectangle.x = Math.random() * (canvas.width - rectangle.width);
-                rectangle.y = Math.random() * (canvas.height - rectangle.height);
+                rectangle.y = Math.random() * (canvas.height / 2 - rectangle.height);  // Initialize within the top half
             }
 
             // Initialize the rectangle's position and size
@@ -71,13 +71,13 @@
             // Initialize the coin's position
             resetCoinPosition();
 
+            // Collision detection function
             function isColliding(rect1, rect2) {
                 return rect1.x < rect2.x + rect2.width &&
-                    rect1.x + rect1.width > rect2.x &&
-                    rect1.y < rect2.y + rect2.height &&
-                    rect1.y + rect1.height > rect2.y;
-}
-
+                       rect1.x + rect1.width > rect2.x &&
+                       rect1.y < rect2.y + rect2.height &&
+                       rect1.y + rect1.height > rect2.y;
+            }
 
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -112,46 +112,6 @@
                     vy = 0;  // Reset vertical velocity when on the ground
                 }
 
-                // Check for collision with the coin
-                if (x < coin.x + coin.size &&
-                    x + 20 > coin.x &&
-                    y < coin.y + coin.size &&
-                    y + 20 > coin.y) {
-                    resetCoinPosition();  // Reset the coin position
-                }
-
-                // Check for collision with the rectangle and push it
-                if (x < rectangle.x + rectangle.width &&
-                    x + 20 > rectangle.x &&
-                    y < rectangle.y + rectangle.height &&
-                    y + 20 > rectangle.y) {
-
-                    // Horizontal push
-                    if (dx > 0) { // Player moving right
-                        rectangle.dx = speed;
-                    } else if (dx < 0) { // Player moving left
-                        rectangle.dx = -speed;
-                    } else {
-                        rectangle.dx = 0;
-                    }
-
-                    // Vertical push
-                    if (vy > 0) { // Player moving down
-                        rectangle.dy = speed;
-                    } else if (vy < 0) { // Player moving up
-                        rectangle.dy = -speed;
-                    } else {
-                        rectangle.dy = 0;
-                    }
-                } else {
-                    rectangle.dx = 0;
-                    rectangle.dy = 0;
-                }
-
-                // Update rectangle position
-                rectangle.x += rectangle.dx;
-                rectangle.y += rectangle.dy;
-
                 // Implement boundaries for the rectangle
                 if (rectangle.x < 0) rectangle.x = 0;
                 if (rectangle.x > canvas.width - rectangle.width) rectangle.x = canvas.width - rectangle.width;
@@ -159,6 +119,14 @@
                 if (rectangle.y > canvas.height - rectangle.height) {
                     rectangle.y = canvas.height - rectangle.height;
                     rectangle.vy = 0;  // Reset vertical velocity when on the ground
+                }
+
+                // Check for collision with the coin
+                if (x < coin.x + coin.size &&
+                    x + 20 > coin.x &&
+                    y < coin.y + coin.size &&
+                    y + 20 > coin.y) {
+                    resetCoinPosition();  // Reset the coin position
                 }
 
                 // Check for collision with the rectangle and adjust player position
@@ -180,6 +148,10 @@
                         dx = 0;  // Reset horizontal velocity
                     }
                 }
+
+                // Update rectangle position
+                rectangle.x += rectangle.dx;
+                rectangle.y += rectangle.dy;
 
                 requestAnimationFrame(draw);
             }
