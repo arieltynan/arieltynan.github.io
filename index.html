@@ -34,6 +34,28 @@
             let vy = 0;  // Vertical velocity
             const fallSpeed = 5;  // Speed increase when down key is pressed
 
+            // Define Rectangle Object
+            const rectangle = {
+                x: 0,
+                y: 0,
+                width: 30,
+                height: 20,
+                dx: 0,
+                dy: 0
+            };
+
+            function resetRectangle() {
+                rectangle.width = 30 + Math.random() * 20;  // Width between 30 and 50
+                rectangle.height = 20 + Math.random() * 20;  // Height between 20 and 40
+                rectangle.x = Math.random() * (canvas.width - rectangle.width);
+                rectangle.y = Math.random() * (canvas.height - rectangle.height);
+            }
+
+            // Initialize the rectangle's position and size
+            resetRectangle();
+
+
+
             // Define the coin object
             const coin = {
                 x: 0,
@@ -58,6 +80,10 @@
                 // Draw the coin
                 ctx.fillStyle = '#FFD700';  // Gold color for the coin
                 ctx.fillRect(coin.x, coin.y, coin.size, coin.size);
+
+                // Draw the rectangle
+                ctx.fillStyle = '#00F';  // Blue color for the rectangle
+                ctx.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 
                 // Update player position
                 x += dx;
@@ -84,6 +110,45 @@
                     y + 20 > coin.y) {
                     resetCoinPosition();  // Reset the coin position
                 }
+
+                // Check for collision with the rectangle and push it
+                if (x < rectangle.x + rectangle.width &&
+                    x + 20 > rectangle.x &&
+                    y < rectangle.y + rectangle.height &&
+                    y + 20 > rectangle.y) {
+
+                    // Horizontal push
+                    if (dx > 0) { // Player moving right
+                        rectangle.dx = speed;
+                    } else if (dx < 0) { // Player moving left
+                        rectangle.dx = -speed;
+                    } else {
+                        rectangle.dx = 0;
+                    }
+
+                    // Vertical push
+                    if (dy > 0) { // Player moving down
+                        rectangle.dy = speed;
+                    } else if (dy < 0) { // Player moving up
+                        rectangle.dy = -speed;
+                    } else {
+                        rectangle.dy = 0;
+                    }
+                } else {
+                    rectangle.dx = 0;
+                    rectangle.dy = 0;
+                }
+
+                // Update rectangle position
+                rectangle.x += rectangle.dx;
+                rectangle.y += rectangle.dy;
+
+                // Implement boundaries for the rectangle
+                if (rectangle.x < 0) rectangle.x = 0;
+                if (rectangle.x > canvas.width - rectangle.width) rectangle.x = canvas.width - rectangle.width;
+                if (rectangle.y < 0) rectangle.y = 0;
+                if (rectangle.y > canvas.height - rectangle.height) rectangle.y = canvas.height - rectangle.height;
+
 
                 requestAnimationFrame(draw);
             }
