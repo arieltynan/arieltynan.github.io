@@ -110,7 +110,6 @@
                 }
             }
 
-
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = '#FFF';
@@ -140,7 +139,7 @@
 
                     // Update rectangle position
                     rectangle.x += rectangle.dx;
-                    rectangle.y += rectangle.dy;   
+                    rectangle.y += rectangle.dy;
                 });
 
                 // Check for collisions between rectangles
@@ -213,85 +212,11 @@
                         else if (lCollision < rCollision && lCollision < tCollision && lCollision < bCollision) {
                             x = rect.x - player.width;
                             dx = 0;  // Reset horizontal velocity
-                            rectangle.dx = speed;  // Push the rectangle
+                            if (!isGripping || rectangle !== grippedRectangle) {
+                                rectangle.dx = speed;  // Push the rectangle
+                            }
                         }
                         // Collision from the right
                         else if (rCollision < lCollision && rCollision < tCollision && rCollision < bCollision) {
                             x = rect.x + rect.width;
-                            dx = 0;  // Reset horizontal velocity
-                            rectangle.dx = -speed;  // Push the rectangle
-                        }
-                    } else if (isGripping && rectangle === grippedRectangle) {
-                        // Move the gripped rectangle with the player
-                        rectangle.x = x;
-                        rectangle.y = y + 20;  // Keep the rectangle below the player
-                    } else {
-                        rectangle.dx = 0;
-                    }
-                });
-
-                requestAnimationFrame(draw);
-            }
-
-            function handleKeyDown(e) {
-                switch(e.key) {
-                    case 'w':
-                        if (canJump && (y >= canvas.height - 20 || vy === 0)) {  // Jump only if on the ground or when vertical velocity is zero
-                            vy = jumpStrength;
-                            canJump = false;  // Prevent double jumping
-                            setTimeout(() => { canJump = true; }, jumpCooldown);  // Reset jump flag after cooldown
-                        }
-                        break;
-                    case 's':
-                                if (isGripping) {
-                            isGripping = false;
-                            grippedRectangle = null;  // Release reference to the gripped rectangle
-                        } else {
-                            rectangles.forEach(rectangle => {
-                                const player = { x: x, y: y, width: 20, height: 20 };
-                                const rect = { x: rectangle.x, y: rectangle.y, width: rectangle.width, height: rectangle.height };
-                                if (isColliding(player, rect)) {
-                                    const playerBottom = player.y + player.height;
-                                    const rectTop = rect.y;
-                                    if (playerBottom === rectTop) {
-                                        isGripping = true;
-                                        grippedRectangle = rectangle;  // Set reference to the gripped rectangle
-                                    }
-                                }
-                            });
-                        }
-                        break;
-                    case 'a':
-                        dx = -speed;
-                        break;
-                    case 'd':
-                        dx = speed;
-                        break;
-                }
-            }
-
-            function handleKeyUp(e) {
-                switch(e.key) {
-                    case 'w':
-                        if (y >= canvas.height - 20) {  // Allow falling when jump key is released
-                            vy = gravity;
-                        }
-                        break;
-                    case 's':
-                        vy = gravity;
-                        break;
-                    case 'a':
-                    case 'd':
-                        dx = 0;
-                        break;
-                }
-            }
-
-            document.addEventListener('keydown', handleKeyDown);
-            document.addEventListener('keyup', handleKeyUp);
-
-            draw();
-        });
-    </script>
-</body>
-</html>
+                            dx
