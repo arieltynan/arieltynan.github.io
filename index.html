@@ -223,8 +223,8 @@
                         }
                     } else if (isGripping && rectangle === grippedRectangle) {
                         // Move the gripped rectangle with the player
-                        rectangle.x += dx;
-                        rectangle.y += vy;
+                        rectangle.x = x;
+                        rectangle.y = y + 20;  // Keep the rectangle below the player
                     } else {
                         rectangle.dx = 0;
                     }
@@ -243,9 +243,22 @@
                         }
                         break;
                     case 's':
-                        isGripping = !isGripping;  // Toggle gripping
-                        if (!isGripping) {
+                                if (isGripping) {
+                            isGripping = false;
                             grippedRectangle = null;  // Release reference to the gripped rectangle
+                        } else {
+                            rectangles.forEach(rectangle => {
+                                const player = { x: x, y: y, width: 20, height: 20 };
+                                const rect = { x: rectangle.x, y: rectangle.y, width: rectangle.width, height: rectangle.height };
+                                if (isColliding(player, rect)) {
+                                    const playerBottom = player.y + player.height;
+                                    const rectTop = rect.y;
+                                    if (playerBottom === rectTop) {
+                                        isGripping = true;
+                                        grippedRectangle = rectangle;  // Set reference to the gripped rectangle
+                                    }
+                                }
+                            });
                         }
                         break;
                     case 'a':
