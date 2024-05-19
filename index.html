@@ -195,6 +195,8 @@
                     isGripping = false;  // Release grip when player lands on the ground
                     grippedRectangle = null;  // Release reference to the gripped rectangle
                     playerColor = initialPlayerColor;  // Reset player color to initial color
+                    speed = 5
+                    jumpStrength = 10
  
                 }
 
@@ -202,7 +204,9 @@
                 if (x < coin.x + coin.size &&
                     x + 20 > coin.x &&
                     y < coin.y + coin.size &&
-                    y + 20 > coin.y) {
+                    y + 20 > coin.y &&
+                    playerColor == '#FFFF00' // Player color must be yellow to get coin
+                    ) {
                     resetCoinPosition();  // Reset the coin position
                 }
 
@@ -213,7 +217,22 @@
                     if (isColliding(player, rect)) {
                         // Change the player color to the color of the rectangle it collided with
                         playerColor = rectangle.color;
-
+                        
+                        if (playerColor == '#FF0000'){
+                            speed = 10
+                        }
+                        else if (playerColor == '#FFFF00'){
+                            speed = 5
+                            jumpStrength = 10
+                        }
+                        else if (playerColor == '#0000FF'){
+                            jumpStrength = 15
+                        }
+                        else if (playerColor == '#FFF'){
+                            speed = 5
+                            jumpStrength = 10
+                        }
+                        // ['#FF0000' Red, '#FFFF00' Yellow, '#0000FF', Blue]
 
                         // Determine the direction of the collision
                         const playerBottom = player.y + player.height;
