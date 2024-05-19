@@ -1,12 +1,4 @@
 <!DOCTYPE html>
-<html>
-<body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
-</body>
-</html>
-
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -35,26 +27,58 @@
 
             let x = canvas.width / 2;
             let y = canvas.height / 2;
-            let xspeed = 2;
-            let yspeed = 2;
+            const speed = 5;
+            let dx = 0;
+            let dy = 0;
 
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = '#FFF';
                 ctx.fillRect(x, y, 20, 20);
 
-                x += xspeed;
-                y += yspeed;
+                x += dx;
+                y += dy;
 
-                if (x < 0 || x > canvas.width - 20) {
-                    xspeed = -xspeed;
-                }
-                if (y < 0 || y > canvas.height - 20) {
-                    yspeed = -yspeed;
-                }
+                if (x < 0) x = 0;
+                if (x > canvas.width - 20) x = canvas.width - 20;
+                if (y < 0) y = 0;
+                if (y > canvas.height - 20) y = canvas.height - 20;
 
                 requestAnimationFrame(draw);
             }
+
+            function handleKeyDown(e) {
+                switch(e.key) {
+                    case 'ArrowUp':
+                        dy = -speed;
+                        break;
+                    case 'ArrowDown':
+                        dy = speed;
+                        break;
+                    case 'ArrowLeft':
+                        dx = -speed;
+                        break;
+                    case 'ArrowRight':
+                        dx = speed;
+                        break;
+                }
+            }
+
+            function handleKeyUp(e) {
+                switch(e.key) {
+                    case 'ArrowUp':
+                    case 'ArrowDown':
+                        dy = 0;
+                        break;
+                    case 'ArrowLeft':
+                    case 'ArrowRight':
+                        dx = 0;
+                        break;
+                }
+            }
+
+            document.addEventListener('keydown', handleKeyDown);
+            document.addEventListener('keyup', handleKeyUp);
 
             draw();
         });
