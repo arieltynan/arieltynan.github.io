@@ -36,26 +36,28 @@
             let canJump = true;  // Flag to control jumping
             const jumpCooldown = 400;  // Cooldown period in milliseconds
 
-            // Define Rectangle Object
-            const rectangle = {
-                x: 0,
-                y: 0,
-                width: 30,
-                height: 20,
-                dx: 0,
-                dy: 0,
-                vy: 0  // Vertical velocity for the rectangle
-            };
+            // Define an array to hold rectangle objects
+            const rectangles = [];
 
-            function resetRectangle() {
-                rectangle.width = 30 + Math.random() * 20;  // Width between 30 and 50
-                rectangle.height = 20 + Math.random() * 20;  // Height between 20 and 40
-                rectangle.x = Math.random() * (canvas.width - rectangle.width);
-                rectangle.y = Math.random() * (canvas.height / 2 - rectangle.height);  // Initialize within the top half
+            // Function to reset rectangles
+            function resetRectangles() {
+                for (let i = 0; i < 3; i++) {
+                    const rectangle = {
+                        x: Math.random() * (canvas.width - 50),
+                        y: Math.random() * (canvas.height / 2 - 40),
+                        width: 30 + Math.random() * 20,  // Width between 30 and 50
+                        height: 20 + Math.random() * 20,  // Height between 20 and 40
+                        dx: 0,
+                        dy: 0,
+                        vy: 0,  // Vertical velocity for the rectangle
+                        color: getRandomColor()
+                    };
+                    rectangles.push(rectangle);
+                }
             }
 
-            // Initialize the rectangle's position and size
-            resetRectangle();
+            // Initialize the rectangles' position and size
+            resetRectangles();
 
             // Define the coin object
             const coin = {
@@ -111,7 +113,7 @@
                 ctx.fillRect(coin.x, coin.y, coin.size, coin.size);
 
                 // Draw the rectangle
-                ctx.fillStyle = '#00F';  // Blue color for the rectangle
+                ctx.fillStyle = '#01F';  // Blue color for the rectangle
                 ctx.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 
                 // Update player position
