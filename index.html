@@ -71,6 +71,14 @@
             // Initialize the coin's position
             resetCoinPosition();
 
+            function isColliding(rect1, rect2) {
+                return rect1.x < rect2.x + rect2.width &&
+                    rect1.x + rect1.width > rect2.x &&
+                    rect1.y < rect2.y + rect2.height &&
+                    rect1.y + rect1.height > rect2.y;
+}
+
+
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = '#FFF';
@@ -151,6 +159,26 @@
                 if (rectangle.y > canvas.height - rectangle.height) {
                     rectangle.y = canvas.height - rectangle.height;
                     rectangle.vy = 0;  // Reset vertical velocity when on the ground
+                }
+
+                // Check for collision with the rectangle and adjust player position
+                const player = { x: x, y: y, width: 20, height: 20 };
+                const rect = { x: rectangle.x, y: rectangle.y, width: rectangle.width, height: rectangle.height };
+                if (isColliding(player, rect)) {
+                    // Collision response: place the player on top of the rectangle
+                    if (player.y + player.height <= rect.y + rect.vy) {  // Collision from above
+                        y = rect.y - player.height;
+                        vy = 0;  // Reset vertical velocity when on top of the rectangle
+                    } else if (player.y >= rect.y + rect.height + rect.vy) {  // Collision from below
+                        y = rect.y + rect.height;
+                        vy = 0;  // Reset vertical velocity
+                    } else if (player.x + player.width <= rect.x + rect.dx) {  // Collision from the left
+                        x = rect.x - player.width;
+                        dx = 0;  // Reset horizontal velocity
+                    } else if (player.x >= rect.x + rect.width + rect.dx) {  // Collision from the right
+                        x = rect.x + rect.width;
+                        dx = 0;  // Reset horizontal velocity
+                    }
                 }
 
                 requestAnimationFrame(draw);
