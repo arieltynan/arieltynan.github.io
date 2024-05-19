@@ -196,7 +196,7 @@
                     grippedRectangle = null;  // Release reference to the gripped rectangle
                     playerColor = initialPlayerColor;  // Reset player color to initial color
                     speed = 5
-                    jumpStrength = 10
+                    jumpStrength = -10
  
                 }
 
@@ -218,20 +218,20 @@
                         // Change the player color to the color of the rectangle it collided with
                         playerColor = rectangle.color;
                         
-                        /*if (playerColor === '#FF0000'){
+                        if (playerColor === '#FF0000'){
                             speed = 10
                         }
                         else if (playerColor === '#FFFF00'){
                             speed = 5
-                            jumpStrength = 10
+                            jumpStrength = -10
                         }
                         else if (playerColor === '#0000FF'){
-                            jumpStrength = 15
+                            jumpStrength = -15
                         }
                         else if (playerColor === '#FFF'){
                             speed = 5
-                            jumpStrength = 10
-                        }*/
+                            jumpStrength = -10
+                        }
                         // ['#FF0000' Red, '#FFFF00' Yellow, '#0000FF', Blue]
 
                         // Determine the direction of the collision
