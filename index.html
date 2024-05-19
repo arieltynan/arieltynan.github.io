@@ -133,20 +133,31 @@
                 const player = { x: x, y: y, width: 20, height: 20 };
                 const rect = { x: rectangle.x, y: rectangle.y, width: rectangle.width, height: rectangle.height };
                 if (isColliding(player, rect)) {
-                    // Collision response: place the player on top of the rectangle
-                    if (player.y + player.height <= rect.y + rect.vy) {  // Collision from above
+                    // Collision from above
+                    if (vy > 0 && player.y + player.height <= rect.y + rect.vy) {
                         y = rect.y - player.height;
                         vy = 0;  // Reset vertical velocity when on top of the rectangle
-                    } else if (player.y >= rect.y + rect.height + rect.vy) {  // Collision from below
+                    }
+                    // Collision from below
+                    else if (vy < 0 && player.y >= rect.y + rect.height + rect.vy) {
                         y = rect.y + rect.height;
                         vy = 0;  // Reset vertical velocity
-                    } else if (player.x + player.width <= rect.x + rect.dx) {  // Collision from the left
+                    }
+                    // Collision from the left
+                    else if (dx > 0 && player.x + player.width <= rect.x + rect.dx) {
                         x = rect.x - player.width;
                         dx = 0;  // Reset horizontal velocity
-                    } else if (player.x >= rect.x + rect.width + rect.dx) {  // Collision from the right
+                        rectangle.dx = speed;  // Push the rectangle
+                    }
+                    // Collision from the right
+                    else if (dx < 0 && player.x >= rect.x + rect.width + rect.dx) {
                         x = rect.x + rect.width;
                         dx = 0;  // Reset horizontal velocity
+                        rectangle.dx = -speed;  // Push the rectangle
                     }
+                } else {
+                    rectangle.dx = 0;
+                    rectangle.dy = 0;
                 }
 
                 // Update rectangle position
