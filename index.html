@@ -134,30 +134,29 @@
                 const rect = { x: rectangle.x, y: rectangle.y, width: rectangle.width, height: rectangle.height };
                 if (isColliding(player, rect)) {
                     // Collision from above
-                    if (vy > 0 && player.y + player.height <= rect.y + rect.vy) {
+                    if (vy > 0 && player.y + player.height - vy <= rect.y) {
                         y = rect.y - player.height;
                         vy = 0;  // Reset vertical velocity when on top of the rectangle
                     }
                     // Collision from below
-                    else if (vy < 0 && player.y >= rect.y + rect.height + rect.vy) {
+                    else if (vy < 0 && player.y >= rect.y + rect.height) {
                         y = rect.y + rect.height;
                         vy = 0;  // Reset vertical velocity
                     }
                     // Collision from the left
-                    else if (dx > 0 && player.x + player.width <= rect.x + rect.dx) {
+                    else if (dx > 0 && player.x + player.width - dx <= rect.x) {
                         x = rect.x - player.width;
                         dx = 0;  // Reset horizontal velocity
                         rectangle.dx = speed;  // Push the rectangle
                     }
                     // Collision from the right
-                    else if (dx < 0 && player.x >= rect.x + rect.width + rect.dx) {
+                    else if (dx < 0 && player.x >= rect.x + rect.width) {
                         x = rect.x + rect.width;
                         dx = 0;  // Reset horizontal velocity
                         rectangle.dx = -speed;  // Push the rectangle
                     }
                 } else {
                     rectangle.dx = 0;
-                    rectangle.dy = 0;
                 }
 
                 // Update rectangle position
@@ -170,7 +169,7 @@
             function handleKeyDown(e) {
                 switch(e.key) {
                     case 'w':
-                        if (y >= canvas.height - 20) {  // Jump only if on the ground
+                        if (y >= canvas.height - 20 || (isColliding({ x: x, y: y, width: 20, height: 20 }, { x: rectangle.x, y: rectangle.y, width: rectangle.width, height: rectangle.height }) && y + 20 <= rectangle.y)) {  // Jump only if on the ground or on the rectangle
                             vy = jumpStrength;
                         }
                         break;
