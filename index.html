@@ -33,6 +33,8 @@
             const jumpStrength = -10;  // Initial jump force
             let vy = 0;  // Vertical velocity
             const fallSpeed = 5;  // Speed increase when down key is pressed
+            let canJump = true;  // Flag to control jumping
+            const jumpCooldown = 200;  // Cooldown period in milliseconds
 
             // Define Rectangle Object
             const rectangle = {
@@ -214,10 +216,12 @@
             function handleKeyDown(e) {
                 switch(e.key) {
                     case 'w':
-                        if (y >= canvas.height - 20 || vy === 0) {  // Jump only if on the ground or when vertical velocity is zero
-                                        vy = jumpStrength;
+                        if (canJump && (y >= canvas.height - 20 || vy === 0)) {  // Jump only if on the ground or when vertical velocity is zero
+                            vy = jumpStrength;
+                            canJump = false;  // Prevent double jumping
+                            setTimeout(() => { canJump = true; }, jumpCooldown);  // Reset jump flag after cooldown
                         }
-                        break;
+                        break; 
                     case 's':
                         vy = fallSpeed;
                         break;
