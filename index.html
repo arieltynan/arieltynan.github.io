@@ -37,7 +37,8 @@
             const jumpCooldown = 400;  // Cooldown period in milliseconds
             let isGripping = false;  // Flag to control gripping
             let grippedRectangle = null;  // Reference to the gripped rectangle
-            let playerColor = '#FFF';  // Initial player color
+            const initialPlayerColor = '#FFF';  // Initial player color
+            let playerColor = initialPlayerColor;  // Current player color
 
             // Define an array to hold rectangle objects
             const rectangles = [];
@@ -191,6 +192,8 @@
                     canJump = true;  // Allow jumping when player lands on the ground
                     isGripping = false;  // Release grip when player lands on the ground
                     grippedRectangle = null;  // Release reference to the gripped rectangle
+                    playerColor = initialPlayerColor;  // Reset player color to initial color
+ 
                 }
 
                 // Check for collision with the coin
