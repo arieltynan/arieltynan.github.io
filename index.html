@@ -30,9 +30,10 @@
             const speed = 5;
             let dx = 0;
             let dy = 0;
-
-            
-
+            const gravity = 0.5;  // Gravity force
+            const jumpStrength = -10;  // Initial jump force
+            let vy = 0;  // Vertical velocity
+            const fallSpeed = 5;  // Speed increase when down key is pressed
 
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -41,7 +42,10 @@
 
                 // Update player position
                 x += dx;
-                y += dy;
+
+                // Apply gravity
+                vy += gravity;
+                y += vy;
 
                 // Implement boundaries
                 if (x < 0) x = 0;
@@ -60,10 +64,12 @@
             function handleKeyDown(e) {
                 switch(e.key) {
                     case 'w':
-                        dy = -speed;
-                        break;
+                        if (y >= canvas.height - 20) {  // Jump only if on the ground
+                            vy = jumpStrength;
+                        }
+            break;
                     case 's':
-                        dy = speed;
+                        vy = fallSpeed;
                         break;
                     case 'a':
                         dx = -speed;
@@ -78,7 +84,7 @@
                 switch(e.key) {
                     case 'w':
                     case 's':
-                        dy = 0;
+                        vy = gravity;
                         break;
                     case 'a':
                     case 'd':
