@@ -106,6 +106,7 @@
                     if (rect1.y < rect2.y) {
                         rect1.y -= (overlapY / 2 + buffer);
                         rect2.y += (overlapY / 2 + buffer);
+                        rect1.vy = 0
                     } else {
                         rect1.y += (overlapY / 2 + buffer);
                         rect2.y -= (overlapY / 2 + buffer);
