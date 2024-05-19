@@ -212,11 +212,73 @@
                         else if (lCollision < rCollision && lCollision < tCollision && lCollision < bCollision) {
                             x = rect.x - player.width;
                             dx = 0;  // Reset horizontal velocity
-                            if (!isGripping || rectangle !== grippedRectangle) {
+                            if (!isGripping) {
                                 rectangle.dx = speed;  // Push the rectangle
                             }
                         }
                         // Collision from the right
                         else if (rCollision < lCollision && rCollision < tCollision && rCollision < bCollision) {
                             x = rect.x + rect.width;
-                            dx
+                            dx = 0;  // Reset horizontal velocity
+                            if (!isGripping) {
+                                rectangle.dx = -speed;  // Push the rectangle
+                            }
+                        }
+                    } else if (isGripping && rectangle === grippedRectangle) {
+                        // Move the gripped rectangle with the player
+                        rectangle.x += dx;
+                        rectangle.y += vy;
+                    } else {
+                        rectangle.dx = 0;
+                    }
+                });
+
+                requestAnimationFrame(draw);
+            }
+
+            function handleKeyDown(e) {
+                switch(e.key) {
+                    case 'w':
+                        if (canJump && (y >= canvas.height - 20 || vy === 0)) {  // Jump only if on the ground or when vertical velocity is zero
+                            vy = jumpStrength;
+                            canJump = false;  // Prevent double jumping
+                            setTimeout(() => { canJump = true; }, jumpCooldown);  // Reset jump flag after cooldown
+                        }
+                        break;
+                    case 's':
+                        isGripping = !isGripping;  // Toggle gripping
+                        if (!isGripping) {
+                            grippedRectangle = null;  // Release reference to the gripped rectangle
+                        }
+                        break;
+                    case 'a':
+                        dx = -speed;
+                        break;
+                    case 'd':
+                        dx = speed;
+                        break;
+                }
+            }
+
+            function handleKeyUp(e) {
+                switch(e.key) {
+                    case 'w':
+                        if (y >= canvas.height - 20) {  // Allow falling when jump key is released
+                            vy = gravity;
+                        }
+                        break;
+                    case 'a':
+                    case 'd':
+                        dx = 0;
+                        break;
+                }
+            }
+
+            document.addEventListener('keydown', handleKeyDown);
+            document.addEventListener('keyup', handleKeyUp);
+
+            draw();
+        });
+    </script>
+</body>
+</html>
