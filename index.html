@@ -41,7 +41,8 @@
                 width: 30,
                 height: 20,
                 dx: 0,
-                dy: 0
+                dy: 0,
+                vy: 0 // Vertical vel for rectangle
             };
 
             function resetRectangle() {
@@ -86,9 +87,13 @@
                 // Update player position
                 x += dx;
 
-                // Apply gravity
+                // Apply gravity to player
                 vy += gravity;
                 y += vy;
+
+                // Apply gravity to the rectangle
+                rectangle.vy += gravity;
+                rectangle.y += rectangle.vy;
 
                 // Implement boundaries for player
                 if (x < 0) x = 0;
@@ -143,7 +148,10 @@
                 if (rectangle.x < 0) rectangle.x = 0;
                 if (rectangle.x > canvas.width - rectangle.width) rectangle.x = canvas.width - rectangle.width;
                 if (rectangle.y < 0) rectangle.y = 0;
-                if (rectangle.y > canvas.height - rectangle.height) rectangle.y = canvas.height - rectangle.height;
+                if (rectangle.y > canvas.height - rectangle.height) {
+                    rectangle.y = canvas.height - rectangle.height;
+                    rectangle.vy = 0;  // Reset vertical velocity when on the ground
+                }
 
                 requestAnimationFrame(draw);
             }
