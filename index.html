@@ -37,6 +37,7 @@
             const jumpCooldown = 400;  // Cooldown period in milliseconds
             let isGripping = false;  // Flag to control gripping
             let grippedRectangle = null;  // Reference to the gripped rectangle
+            let playerColor = '#FFF';  // Initial player color
 
             // Define an array to hold rectangle objects
             const rectangles = [];
@@ -134,7 +135,7 @@
 
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#FFF';
+                ctx.fillStyle = playerColor;  // Use playerColor to draw the player
                 ctx.fillRect(x, y, 20, 20);
 
                 // Draw the coin
@@ -205,6 +206,10 @@
                     const player = { x: x, y: y, width: 20, height: 20 };
                     const rect = { x: rectangle.x, y: rectangle.y, width: rectangle.width, height: rectangle.height };
                     if (isColliding(player, rect)) {
+                        // Change the player color to the color of the rectangle it collided with
+                        playerColor = rectangle.color;
+
+
                         // Determine the direction of the collision
                         const playerBottom = player.y + player.height;
                         const playerRight = player.x + player.width;
