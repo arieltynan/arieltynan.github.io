@@ -41,6 +41,7 @@
 
             // Function to reset rectangles
             function resetRectangles() {
+                const colors = ['#FF0000', '#FFFF00', '#0000FF'];  // Red, Yellow, Blue
                 for (let i = 0; i < 3; i++) {
                     const rectangle = {
                         x: Math.random() * (canvas.width - 50),
@@ -50,7 +51,7 @@
                         dx: 0,
                         dy: 0,
                         vy: 0,  // Vertical velocity for the rectangle
-                        color: getRandomColor()
+                        color: colors[i]
                     };
                     rectangles.push(rectangle);
                 }
@@ -83,26 +84,6 @@
                        rect1.y + rect1.height > rect2.y;
             }
 
-            function handleCollision(rect1, rect2) {
-                // Resolve collision for rect1 with rect2
-                const overlapX = Math.min(rect1.x + rect1.width - rect2.x, rect2.x + rect2.width - rect1.x);
-                const overlapY = Math.min(rect1.y + rect1.height - rect2.y, rect2.y + rect2.height - rect1.y);
-
-                if (overlapX < overlapY) {
-                    if (rect1.x < rect2.x) {
-                        rect1.x -= overlapX;
-                    } else {
-                        rect1.x += overlapX;
-                    }
-                } else {
-                    if (rect1.y < rect2.y) {
-                        rect1.y -= overlapY;
-                    } else {
-                        rect1.y += overlapY;
-                    }
-                }
-            }
-
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = '#FFF';
@@ -112,9 +93,28 @@
                 ctx.fillStyle = '#FFD700';  // Gold color for the coin
                 ctx.fillRect(coin.x, coin.y, coin.size, coin.size);
 
-                // Draw the rectangle
-                ctx.fillStyle = '#01F';  // Blue color for the rectangle
-                ctx.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+                // Draw and update each rectangle
+                rectangles.forEach(rectangle => {
+                    ctx.fillStyle = rectangle.color;  // Set the rectangle color
+                    ctx.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+
+                    // Apply gravity to the rectangle
+                    rectangle.vy += gravity;
+                    rectangle.y += rectangle.vy;
+
+                    // Implement boundaries for the rectangle
+                    if (rectangle.x < 0) rectangle.x = 0;
+                    if (rectangle.x > canvas.width - rectangle.width) rectangle.x = canvas.width - rectangle.width;
+                    if (rectangle.y < 0) rectangle.y = 0;
+                    if (rectangle.y > canvas.height - rectangle.height) {
+                        rectangle.y = canvas.height - rectangle.height;
+                        rectangle.vy = 0;  // Reset vertical velocity when on the ground
+                    }
+
+                    // Update rectangle position
+                    rectangle.x += rectangle.dx;
+                    rectangle.y += rectangle.dy;
+                });
 
                 // Update player position
                 x += dx;
@@ -123,10 +123,6 @@
                 vy += gravity;
                 y += vy;
 
-                // Apply gravity to the rectangle
-                rectangle.vy += gravity;
-                rectangle.y += rectangle.vy;
-
                 // Implement boundaries for player
                 if (x < 0) x = 0;
                 if (x > canvas.width - 20) x = canvas.width - 20;
@@ -134,15 +130,7 @@
                 if (y > canvas.height - 20) {
                     y = canvas.height - 20;
                     vy = 0;  // Reset vertical velocity when on the ground
-                }
-
-                // Implement boundaries for the rectangle
-                if (rectangle.x < 0) rectangle.x = 0;
-                if (rectangle.x > canvas.width - rectangle.width) rectangle.x = canvas.width - rectangle.width;
-                if (rectangle.y < 0) rectangle.y = 0;
-                if (rectangle.y > canvas.height - rectangle.height) {
-                    rectangle.y = canvas.height - rectangle.height;
-                    rectangle.vy = 0;  // Reset vertical velocity when on the ground
+                    canJump = true;  // Allow jumping when player lands on the ground
                 }
 
                 // Check for collision with the coin
@@ -153,64 +141,49 @@
                     resetCoinPosition();  // Reset the coin position
                 }
 
-                // Check for collision with the rectangle and adjust player position
-                const player = { x: x, y: y, width: 20, height: 20 };
-                const rect = { x: rectangle.x, y: rectangle.y, width: rectangle.width, height: rectangle.height };
-                if (isColliding(player, rect)) {
-                    // Determine the direction of the collision
-                    const playerBottom = player.y + player.height;
-                    const playerRight = player.x + player.width;
-                    const rectBottom = rect.y + rect.height;
-                    const rectRight = rect.x + rect.width;
+                // Check for collision with each rectangle and adjust player position
+                rectangles.forEach(rectangle => {
+                    const player = { x: x, y: y, width: 20, height: 20 };
+                    const rect = { x: rectangle.x, y: rectangle.y, width: rectangle.width, height: rectangle.height };
+                    if (isColliding(player, rect)) {
+                        // Determine the direction of the collision
+                        const playerBottom = player.y + player.height;
+                        const playerRight = player.x + player.width;
+                        const rectBottom = rect.y + rect.height;
+                        const rectRight = rect.x + rect.width;
 
-                    const bCollision = rectBottom - player.y;
-                    const tCollision = playerBottom - rect.y;
-                    const lCollision = playerRight - rect.x;
-                    const rCollision = rectRight - player.x;
+                        const bCollision = rectBottom - player.y;
+                        const tCollision = playerBottom - rect.y;
+                        const lCollision = playerRight - rect.x;
+                        const rCollision = rectRight - player.x;
 
-                    // Collision from above
-                    if (tCollision < bCollision && tCollision < lCollision && tCollision < rCollision) {
-                        y = rect.y - player.height;
-                        vy = 0;  // Reset vertical velocity when on top of the rectangle
+                        // Collision from above
+                        if (tCollision < bCollision && tCollision < lCollision && tCollision < rCollision) {
+                            y = rect.y - player.height;
+                            vy = 0;  // Reset vertical velocity when on top of the rectangle
+                            canJump = true;  // Allow jumping when player lands on the rectangle
+                        }
+                        // Collision from below
+                        else if (bCollision < tCollision && bCollision < lCollision && bCollision < rCollision) {
+                            y = rect.y + rect.height;
+                            vy = 0;  // Reset vertical velocity
+                        }
+                        // Collision from the left
+                        else if (lCollision < rCollision && lCollision < tCollision && lCollision < bCollision) {
+                            x = rect.x - player.width;
+                            dx = 0;  // Reset horizontal velocity
+                            rectangle.dx = speed;  // Push the rectangle
+                        }
+                        // Collision from the right
+                        else if (rCollision < lCollision && rCollision < tCollision && rCollision < bCollision) {
+                            x = rect.x + rect.width;
+                            dx = 0;  // Reset horizontal velocity
+                            rectangle.dx = -speed;  // Push the rectangle
+                        }
+                    } else {
+                        rectangle.dx = 0;
                     }
-                    // Collision from below
-                    else if (bCollision < tCollision && bCollision < lCollision && bCollision < rCollision) {
-                        y = rect.y + rect.height;
-                        vy = 0;  // Reset vertical velocity
-                    }
-                    // Collision from the left
-                    else if (lCollision < rCollision && lCollision < tCollision && lCollision < bCollision) {
-                        x = rect.x - player.width;
-                        dx = 0;  // Reset horizontal velocity
-                        rectangle.dx = speed;  // Push the rectangle
-                    }
-                    // Collision from the right
-                    else if (rCollision < lCollision && rCollision < tCollision && rCollision < bCollision) {
-                        x = rect.x + rect.width;
-                        dx = 0;  // Reset horizontal velocity
-                        rectangle.dx = -speed;  // Push the rectangle
-                    }
-                } else {
-                    rectangle.dx = 0;
-                }
-
-                // Check for collision between rectangle and canvas boundaries
-                if (rectangle.y + rectangle.height > canvas.height) {
-                    rectangle.y = canvas.height - rectangle.height;
-                    rectangle.vy = 0;
-                }
-                if (rectangle.x + rectangle.width > canvas.width) {
-                    rectangle.x = canvas.width - rectangle.width;
-                    rectangle.dx = 0;
-                }
-                if (rectangle.x < 0) {
-                    rectangle.x = 0;
-                    rectangle.dx = 0;
-                }
-
-                // Update rectangle position
-                rectangle.x += rectangle.dx;
-                rectangle.y += rectangle.dy;
+                });
 
                 requestAnimationFrame(draw);
             }
@@ -223,7 +196,7 @@
                             canJump = false;  // Prevent double jumping
                             setTimeout(() => { canJump = true; }, jumpCooldown);  // Reset jump flag after cooldown
                         }
-                        break; 
+                        break;
                     case 's':
                         vy = fallSpeed;
                         break;
