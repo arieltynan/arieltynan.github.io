@@ -35,6 +35,8 @@
             const fallSpeed = 5;  // Speed increase when down key is pressed
             let canJump = true;  // Flag to control jumping
             const jumpCooldown = 400;  // Cooldown period in milliseconds
+            let isGripping = false;  // Flag to control gripping
+            let grippedRectangle = null;  // Reference to the gripped rectangle
 
             // Define an array to hold rectangle objects
             const rectangles = [];
@@ -165,6 +167,8 @@
                     y = canvas.height - 20;
                     vy = 0;  // Reset vertical velocity when on the ground
                     canJump = true;  // Allow jumping when player lands on the ground
+                    isGripping = false;  // Release grip when player lands on the ground
+                    grippedRectangle = null;  // Release reference to the gripped rectangle
                 }
 
                 // Check for collision with the coin
@@ -196,6 +200,9 @@
                             y = rect.y - player.height;
                             vy = 0;  // Reset vertical velocity when on top of the rectangle
                             canJump = true;  // Allow jumping when player lands on the rectangle
+                            if (isGripping) {
+                                grippedRectangle = rectangle;  // Set reference to the gripped rectangle
+                            }
                         }
                         // Collision from below
                         else if (bCollision < tCollision && bCollision < lCollision && bCollision < rCollision) {
@@ -214,6 +221,10 @@
                             dx = 0;  // Reset horizontal velocity
                             rectangle.dx = -speed;  // Push the rectangle
                         }
+                    } else if (isGripping && rectangle === grippedRectangle) {
+                        // Move the gripped rectangle with the player
+                        rectangle.x += dx;
+                        rectangle.y += vy;
                     } else {
                         rectangle.dx = 0;
                     }
@@ -232,7 +243,10 @@
                         }
                         break;
                     case 's':
-                        vy = fallSpeed;
+                        isGripping = !isGripping;  // Toggle gripping
+                        if (!isGripping) {
+                            grippedRectangle = null;  // Release reference to the gripped rectangle
+                        }
                         break;
                     case 'a':
                         dx = -speed;
