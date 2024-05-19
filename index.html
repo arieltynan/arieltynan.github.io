@@ -26,7 +26,7 @@
             const ctx = canvas.getContext('2d');
 
             let x = canvas.width / 2;
-            let y = canvas.height / 2;
+            let y = canvas.height - 20;
             const speed = 5;
             let dx = 0;
             const gravity = 0.5;  // Gravity force
@@ -53,8 +53,6 @@
 
             // Initialize the rectangle's position and size
             resetRectangle();
-
-
 
             // Define the coin object
             const coin = {
@@ -92,16 +90,14 @@
                 vy += gravity;
                 y += vy;
 
-                // Implement boundaries
+                // Implement boundaries for player
                 if (x < 0) x = 0;
                 if (x > canvas.width - 20) x = canvas.width - 20;
                 if (y < 0) y = 0;
-                if (y > canvas.height - 20) y = canvas.height - 20;
-
-                if (x < 0) x = 0;
-                if (x > canvas.width - 20) x = canvas.width - 20;
-                if (y < 0) y = 0;
-                if (y > canvas.height - 20) y = canvas.height - 20;
+                if (y > canvas.height - 20) {
+                    y = canvas.height - 20;
+                    vy = 0;  // Reset vertical velocity when on the ground
+                }
 
                 // Check for collision with the coin
                 if (x < coin.x + coin.size &&
@@ -127,9 +123,9 @@
                     }
 
                     // Vertical push
-                    if (dy > 0) { // Player moving down
+                    if (vy > 0) { // Player moving down
                         rectangle.dy = speed;
-                    } else if (dy < 0) { // Player moving up
+                    } else if (vy < 0) { // Player moving up
                         rectangle.dy = -speed;
                     } else {
                         rectangle.dy = 0;
@@ -149,7 +145,6 @@
                 if (rectangle.y < 0) rectangle.y = 0;
                 if (rectangle.y > canvas.height - rectangle.height) rectangle.y = canvas.height - rectangle.height;
 
-
                 requestAnimationFrame(draw);
             }
 
@@ -159,7 +154,7 @@
                         if (y >= canvas.height - 20) {  // Jump only if on the ground
                             vy = jumpStrength;
                         }
-            break;
+                        break;
                     case 's':
                         vy = fallSpeed;
                         break;
@@ -175,6 +170,10 @@
             function handleKeyUp(e) {
                 switch(e.key) {
                     case 'w':
+                        if (y >= canvas.height - 20) {  // Allow falling when jump key is released
+                            vy = gravity;
+                        }
+                        break;
                     case 's':
                         vy = gravity;
                         break;
