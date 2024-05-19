@@ -189,7 +189,7 @@
                 } else {
                     rectangle.dx = 0;
                 }
-                
+
                 // Check for collision between rectangle and canvas boundaries
                 if (rectangle.y + rectangle.height > canvas.height) {
                     rectangle.y = canvas.height - rectangle.height;
@@ -214,8 +214,8 @@
             function handleKeyDown(e) {
                 switch(e.key) {
                     case 'w':
-                        if (y >= canvas.height - 20 || (isColliding({ x: x, y: y, width: 20, height: 20 }, { x: rectangle.x, y: rectangle.y, width: rectangle.width, height: rectangle.height }) && y + 20 <= rectangle.y)) {  // Jump only if on the ground or on the rectangle
-                            vy = jumpStrength;
+                        if (y >= canvas.height - 20 || vy === 0) {  // Jump only if on the ground or when vertical velocity is zero
+                                        vy = jumpStrength;
                         }
                         break;
                     case 's':
