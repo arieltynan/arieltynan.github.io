@@ -109,7 +109,17 @@
                         rect2.y -= (overlapY / 2 + buffer);
                     }
                 }
-                
+
+                // Prevent rectangles from being pushed into each other
+                if (rect1.y + rect1.height > rect2.y && rect1.y < rect2.y) {
+                    rect1.y = rect2.y - rect1.height - buffer;
+                    rect1.vy = 0;
+                }
+                if (rect2.y + rect2.height > rect1.y && rect2.y < rect1.y) {
+                    rect2.y = rect1.y - rect2.height - buffer;
+                    rect2.vy = 0;
+                }
+
                 // Prevent rectangles from being pushed into the ground
                 if (rect1.y + rect1.height > canvas.height) {
                     rect1.y = canvas.height - rect1.height;
