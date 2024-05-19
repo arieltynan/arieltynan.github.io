@@ -31,13 +31,23 @@
             let dx = 0;
             let dy = 0;
 
+            
+
+
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = '#FFF';
                 ctx.fillRect(x, y, 20, 20);
 
+                // Update player position
                 x += dx;
                 y += dy;
+
+                // Implement boundaries
+                if (x < 0) x = 0;
+                if (x > canvas.width - 20) x = canvas.width - 20;
+                if (y < 0) y = 0;
+                if (y > canvas.height - 20) y = canvas.height - 20;
 
                 if (x < 0) x = 0;
                 if (x > canvas.width - 20) x = canvas.width - 20;
