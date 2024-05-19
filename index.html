@@ -153,15 +153,43 @@
                 const player = { x: x, y: y, width: 20, height: 20 };
                 const rect = { x: rectangle.x, y: rectangle.y, width: rectangle.width, height: rectangle.height };
                 if (isColliding(player, rect)) {
+                    // Determine the direction of the collision
+                    const playerBottom = player.y + player.height;
+                    const playerRight = player.x + player.width;
+                    const rectBottom = rect.y + rect.height;
+                    const rectRight = rect.x + rect.width;
+
+                    const bCollision = rectBottom - player.y;
+                    const tCollision = playerBottom - rect.y;
+                    const lCollision = playerRight - rect.x;
+                    const rCollision = rectRight - player.x;
+
                     // Collision from above
-                    if (vy > 0 && player.y + player.height - vy <= rect.y) {
+                    if (tCollision < bCollision && tCollision < lCollision && tCollision < rCollision) {
                         y = rect.y - player.height;
                         vy = 0;  // Reset vertical velocity when on top of the rectangle
-                    } else {
-                        handleCollision(player, rect);
                     }
+                    // Collision from below
+                    else if (bCollision < tCollision && bCollision < lCollision && bCollision < rCollision) {
+                        y = rect.y + rect.height;
+                        vy = 0;  // Reset vertical velocity
+                    }
+                    // Collision from the left
+                    else if (lCollision < rCollision && lCollision < tCollision && lCollision < bCollision) {
+                        x = rect.x - player.width;
+                        dx = 0;  // Reset horizontal velocity
+                        rectangle.dx = speed;  // Push the rectangle
+                    }
+                    // Collision from the right
+                    else if (rCollision < lCollision && rCollision < tCollision && rCollision < bCollision) {
+                        x = rect.x + rect.width;
+                        dx = 0;  // Reset horizontal velocity
+                        rectangle.dx = -speed;  // Push the rectangle
+                    }
+                } else {
+                    rectangle.dx = 0;
                 }
-
+                
                 // Check for collision between rectangle and canvas boundaries
                 if (rectangle.y + rectangle.height > canvas.height) {
                     rectangle.y = canvas.height - rectangle.height;
