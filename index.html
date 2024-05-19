@@ -79,6 +79,26 @@
                        rect1.y + rect1.height > rect2.y;
             }
 
+            function handleCollision(rect1, rect2) {
+                // Resolve collision for rect1 with rect2
+                const overlapX = Math.min(rect1.x + rect1.width - rect2.x, rect2.x + rect2.width - rect1.x);
+                const overlapY = Math.min(rect1.y + rect1.height - rect2.y, rect2.y + rect2.height - rect1.y);
+
+                if (overlapX < overlapY) {
+                    if (rect1.x < rect2.x) {
+                        rect1.x -= overlapX;
+                    } else {
+                        rect1.x += overlapX;
+                    }
+                } else {
+                    if (rect1.y < rect2.y) {
+                        rect1.y -= overlapY;
+                    } else {
+                        rect1.y += overlapY;
+                    }
+                }
+            }
+
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = '#FFF';
@@ -137,25 +157,22 @@
                     if (vy > 0 && player.y + player.height - vy <= rect.y) {
                         y = rect.y - player.height;
                         vy = 0;  // Reset vertical velocity when on top of the rectangle
+                    } else {
+                        handleCollision(player, rect);
                     }
-                    // Collision from below
-                    else if (vy < 0 && player.y >= rect.y + rect.height) {
-                        y = rect.y + rect.height;
-                        vy = 0;  // Reset vertical velocity
-                    }
-                    // Collision from the left
-                    else if (dx > 0 && player.x + player.width - dx <= rect.x) {
-                        x = rect.x - player.width;
-                        dx = 0;  // Reset horizontal velocity
-                        rectangle.dx = speed;  // Push the rectangle
-                    }
-                    // Collision from the right
-                    else if (dx < 0 && player.x >= rect.x + rect.width) {
-                        x = rect.x + rect.width;
-                        dx = 0;  // Reset horizontal velocity
-                        rectangle.dx = -speed;  // Push the rectangle
-                    }
-                } else {
+                }
+
+                // Check for collision between rectangle and canvas boundaries
+                if (rectangle.y + rectangle.height > canvas.height) {
+                    rectangle.y = canvas.height - rectangle.height;
+                    rectangle.vy = 0;
+                }
+                if (rectangle.x + rectangle.width > canvas.width) {
+                    rectangle.x = canvas.width - rectangle.width;
+                    rectangle.dx = 0;
+                }
+                if (rectangle.x < 0) {
+                    rectangle.x = 0;
                     rectangle.dx = 0;
                 }
 
