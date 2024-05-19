@@ -212,7 +212,7 @@
                         else if (lCollision < rCollision && lCollision < tCollision && lCollision < bCollision) {
                             x = rect.x - player.width;
                             dx = 0;  // Reset horizontal velocity
-                            if (!isGripping) {
+                            if (!isGripping || rectangle !== grippedRectangle) {
                                 rectangle.dx = speed;  // Push the rectangle
                             }
                         }
@@ -220,14 +220,14 @@
                         else if (rCollision < lCollision && rCollision < tCollision && rCollision < bCollision) {
                             x = rect.x + rect.width;
                             dx = 0;  // Reset horizontal velocity
-                            if (!isGripping) {
+                            if (!isGripping || rectangle !== grippedRectangle) {
                                 rectangle.dx = -speed;  // Push the rectangle
                             }
                         }
                     } else if (isGripping && rectangle === grippedRectangle) {
                         // Move the gripped rectangle with the player
-                        rectangle.x += dx;
-                        rectangle.y += vy;
+                        rectangle.x = x;
+                        rectangle.y = y + 20;  // Keep the rectangle below the player
                     } else {
                         rectangle.dx = 0;
                     }
