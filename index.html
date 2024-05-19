@@ -88,24 +88,25 @@
 
             // Function to handle rectangle-rectangle collision
             function handleRectangleCollision(rect1, rect2) {
+                const buffer = 1;  // Small buffer to prevent oscillation
                 const overlapX = Math.min(rect1.x + rect1.width - rect2.x, rect2.x + rect2.width - rect1.x);
                 const overlapY = Math.min(rect1.y + rect1.height - rect2.y, rect2.y + rect2.height - rect1.y);
 
                 if (overlapX < overlapY) {
                     if (rect1.x < rect2.x) {
-                        rect1.x -= overlapX / 2;
-                        rect2.x += overlapX / 2;
+                        rect1.x -= (overlapX / 2 + buffer);
+                        rect2.x += (overlapX / 2 + buffer);
                     } else {
-                        rect1.x += overlapX / 2;
-                        rect2.x -= overlapX / 2;
+                        rect1.x += (overlapX / 2 + buffer);
+                        rect2.x -= (overlapX / 2 + buffer);
                     }
                 } else {
                     if (rect1.y < rect2.y) {
-                        rect1.y -= overlapY / 2;
-                        rect2.y += overlapY / 2;
+                        rect1.y -= (overlapY / 2 + buffer);
+                        rect2.y += (overlapY / 2 + buffer);
                     } else {
-                        rect1.y += overlapY / 2;
-                        rect2.y -= overlapY / 2;
+                        rect1.y += (overlapY / 2 + buffer);
+                        rect2.y -= (overlapY / 2 + buffer);
                     }
                 }
             }
