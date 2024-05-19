@@ -29,16 +29,35 @@
             let y = canvas.height / 2;
             const speed = 5;
             let dx = 0;
-            let dy = 0;
             const gravity = 0.5;  // Gravity force
             const jumpStrength = -10;  // Initial jump force
             let vy = 0;  // Vertical velocity
             const fallSpeed = 5;  // Speed increase when down key is pressed
 
+            // Define the coin object
+            const coin = {
+                x: 0,
+                y: 0,
+                size: 15
+            };
+
+            // Function to reset the coin position
+            function resetCoinPosition() {
+                coin.x = Math.random() * (canvas.width - coin.size);
+                coin.y = Math.random() * (canvas.height / 2 - coin.size);
+            }
+
+            // Initialize the coin's position
+            resetCoinPosition();
+
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = '#FFF';
                 ctx.fillRect(x, y, 20, 20);
+
+                // Draw the coin
+                ctx.fillStyle = '#FFD700';  // Gold color for the coin
+                ctx.fillRect(coin.x, coin.y, coin.size, coin.size);
 
                 // Update player position
                 x += dx;
@@ -57,6 +76,14 @@
                 if (x > canvas.width - 20) x = canvas.width - 20;
                 if (y < 0) y = 0;
                 if (y > canvas.height - 20) y = canvas.height - 20;
+
+                // Check for collision with the coin
+                if (x < coin.x + coin.size &&
+                    x + 20 > coin.x &&
+                    y < coin.y + coin.size &&
+                    y + 20 > coin.y) {
+                    resetCoinPosition();  // Reset the coin position
+                }
 
                 requestAnimationFrame(draw);
             }
