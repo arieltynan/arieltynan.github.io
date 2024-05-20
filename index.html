@@ -16,6 +16,16 @@
         canvas {
             border: 1px solid #fff;
         }
+        #scoreboard {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            font-size: 20px;
+        }
+
+
+
     </style>
 </head>
 <body>
@@ -24,6 +34,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             const canvas = document.getElementById('gameCanvas');
             const ctx = canvas.getContext('2d');
+            const scoreboard = document.getElementById('scoreboard');
 
             let x = canvas.width / 2;
             let y = canvas.height - 20;
@@ -136,6 +147,13 @@
 
             }
 
+            let score = 0;
+
+            function updateScore() {
+                score++;
+                scoreboard.textContent = `Score: ${score}`;
+            }
+
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = playerColor;  // Use playerColor to draw the player
@@ -207,6 +225,7 @@
                     y + 20 > coin.y &&
                     playerColor == '#FFFF00' // Player color must be yellow to get coin
                     ) {
+                    score += 1
                     resetCoinPosition();  // Reset the coin position
                 }
 
