@@ -225,7 +225,7 @@
                     y + 20 > coin.y &&
                     playerColor == '#FFFF00' // Player color must be yellow to get coin
                     ) {
-                    score += 1
+                    score += 1;
                     resetCoinPosition();  // Reset the coin position
                 }
 
@@ -238,18 +238,18 @@
                         playerColor = rectangle.color;
                         
                         if (playerColor === '#FF0000'){
-                            speed = 10
+                            speed = 10;
                         }
                         else if (playerColor === '#FFFF00'){
-                            speed = 5
-                            jumpStrength = -10
+                            speed = 5;
+                            jumpStrength = -10;
                         }
                         else if (playerColor === '#0000FF'){
-                            jumpStrength = -15
+                            jumpStrength = -15;
                         }
                         else if (playerColor === '#FFF'){
-                            speed = 5
-                            jumpStrength = -10
+                            speed = 5;
+                            jumpStrength = -10;
                         }
                         // ['#FF0000' Red, '#FFFF00' Yellow, '#0000FF', Blue]
 
