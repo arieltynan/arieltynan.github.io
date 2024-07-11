@@ -241,15 +241,17 @@
                         
                         if (playerColor === '#FF0000'){
                             speed = 10;
-                            invertedGravity = false;
+                            jumpStrength = -10;
+                            invertedGravity = false; // Ensure gravity is not inverted for red block //
                         }
                         else if (playerColor === '#FFFF00'){
                             speed = 5;
                             jumpStrength = -10;
-                            invertedGravity = false;
+                            invertedGravity = false;  // Ensure gravity is not inverted for yellow block //
                         }
                         else if (playerColor === '#0000FF'){ //blue
-                            jumpStrength = invertedGravity ? -10 : 10;
+                            jumpStrength = invertedGravity ? 10 : -10;
+                            jumpStrength = 10
                             invertedGravity = true;
 
                         }
@@ -315,7 +317,7 @@
             function handleKeyDown(e) {
                 switch(e.key) {
                     case 'w':
-                        if (canJump && (y >= canvas.height - 20 || vy === 0)) {  // Jump only if on the ground or when vertical velocity is zero
+                        if (canJump && ((invertedGravity && y <= 0) || (!invertedGravity && y >= canvas.height - 20) || vy === 0)) {
                             vy = jumpStrength;
                             canJump = false;  // Prevent double jumping
                             setTimeout(() => { canJump = true; }, jumpCooldown);  // Reset jump flag after cooldown
