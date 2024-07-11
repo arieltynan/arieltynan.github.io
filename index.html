@@ -16,6 +16,16 @@
         canvas {
             border: 1px solid #fff;
         }
+        #scoreboard {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            font-size: 20px;
+        }
+
+
+
     </style>
 </head>
 <body>
@@ -24,19 +34,23 @@
         document.addEventListener("DOMContentLoaded", function() {
             const canvas = document.getElementById('gameCanvas');
             const ctx = canvas.getContext('2d');
+            const scoreboard = document.getElementById('scoreboard');
 
             let x = canvas.width / 2;
             let y = canvas.height - 20;
-            const speed = 5;
+            let speed = 5;
             let dx = 0;
             const gravity = 0.5;  // Gravity force
-            const jumpStrength = -10;  // Initial jump force
+            let jumpStrength = -10;  // Initial jump force
             let vy = 0;  // Vertical velocity
             const fallSpeed = 5;  // Speed increase when down key is pressed
             let canJump = true;  // Flag to control jumping
             const jumpCooldown = 400;  // Cooldown period in milliseconds
             let isGripping = false;  // Flag to control gripping
             let grippedRectangle = null;  // Reference to the gripped rectangle
+            const initialPlayerColor = '#FFF';  // Initial player color
+            let playerColor = initialPlayerColor;  // Current player color
+            let invertedGravity = false;
 
             // Define an array to hold rectangle objects
             const rectangles = [];
@@ -48,8 +62,8 @@
                     const rectangle = {
                         x: Math.random() * (canvas.width - 50),
                         y: Math.random() * (canvas.height / 2 - 40),
-                        width: 30 + Math.random() * 20,  // Width between 30 and 50
-                        height: 20 + Math.random() * 20,  // Height between 20 and 40
+                        width: 30 + 1 * 20,  // Width between 30 and 50
+                        height: 20 + .5 * 20,  // Height between 20 and 40
                         dx: 0,
                         dy: 0,
                         vy: 0,  // Vertical velocity for the rectangle
@@ -88,32 +102,62 @@
 
             // Function to handle rectangle-rectangle collision
             function handleRectangleCollision(rect1, rect2) {
+                const buffer = 0;  // Small buffer to prevent oscillation
                 const overlapX = Math.min(rect1.x + rect1.width - rect2.x, rect2.x + rect2.width - rect1.x);
                 const overlapY = Math.min(rect1.y + rect1.height - rect2.y, rect2.y + rect2.height - rect1.y);
 
                 if (overlapX < overlapY) {
                     if (rect1.x < rect2.x) {
-                        rect1.x -= overlapX / 2;
-                        rect2.x += overlapX / 2;
+                        rect1.x -= (overlapX / 2 + buffer);
+                        rect2.x += (overlapX / 2 + buffer);
                     } else {
-                        rect1.x += overlapX / 2;
-                        rect2.x -= overlapX / 2;
+                        rect1.x += (overlapX / 2 + buffer);
+                        rect2.x -= (overlapX / 2 + buffer);
                     }
                 } else {
                     if (rect1.y < rect2.y) {
-                        rect1.y -= overlapY / 2;
-                        rect2.y += overlapY / 2;
+                        rect1.y -= (overlapY / 2 + buffer);
+                        rect2.y += (overlapY / 2 + buffer);
+                        rect1.vy = 0
                     } else {
-                        rect1.y += overlapY / 2;
-                        rect2.y -= overlapY / 2;
+                        rect1.y += (overlapY / 2 + buffer);
+                        rect2.y -= (overlapY / 2 + buffer);
+                        rect2.vy = 0
                     }
                 }
+
+                // Prevent rectangles from being pushed into each other
+                if (rect1.y + rect1.height > rect2.y && rect1.y < rect2.y) {
+                    rect1.y = rect2.y - rect1.height - buffer;
+                    rect1.vy = 0;
+                }
+                if (rect2.y + rect2.height > rect1.y && rect2.y < rect1.y) {
+                    rect2.y = rect1.y - rect2.height - buffer;
+                    rect2.vy = 0;
+                }
+
+                // Prevent rectangles from being pushed into the ground
+                if (rect1.y + rect1.height > canvas.height) {
+                    rect1.y = canvas.height - rect1.height;
+                    rect1.vy = 0;
+                }
+                if (rect2.y + rect2.height > canvas.height) {
+                    rect2.y = canvas.height - rect2.height;
+                    rect2.vy = 0;
+                }
+
             }
 
+            let score = 0;
+
+            function updateScore() {
+                score++;
+                scoreboard.textContent = `Score: ${score}`;
+            }
 
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#FFF';
+                ctx.fillStyle = playerColor;  // Use playerColor to draw the player
                 ctx.fillRect(x, y, 20, 20);
 
                 // Draw the coin
@@ -125,8 +169,8 @@
                     ctx.fillStyle = rectangle.color;  // Set the rectangle color
                     ctx.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 
-                    // Apply gravity to the rectangle
-                    rectangle.vy += gravity;
+                    const currentGravity = invertedGravity ? -gravity : gravity;
+                    rectangle.vy += currentGravity;
                     rectangle.y += rectangle.vy;
 
                     // Implement boundaries for the rectangle
@@ -140,7 +184,7 @@
 
                     // Update rectangle position
                     rectangle.x += rectangle.dx;
-                    rectangle.y += rectangle.dy;   
+                    rectangle.y += rectangle.dy;
                 });
 
                 // Check for collisions between rectangles
@@ -156,26 +200,36 @@
                 x += dx;
 
                 // Apply gravity to player
-                vy += gravity;
+                const currentGravity = invertedGravity ? -gravity : gravity;
+                vy += currentGravity;
                 y += vy;
 
                 // Implement boundaries for player
                 if (x < 0) x = 0;
                 if (x > canvas.width - 20) x = canvas.width - 20;
-                if (y < 0) y = 0;
-                if (y > canvas.height - 20) {
+                if (y < 0) {
+                    y = 0;
+                    vy = 0;  // Reset vertical velocity when hitting the upper boundary
+                    canJump = true;  // Allow jumping when player hits the upper boundary
+                    playerColor = initialPlayerColor;  // Reset player color to initial color
+                } else if (y > canvas.height - 20) {
                     y = canvas.height - 20;
                     vy = 0;  // Reset vertical velocity when on the ground
                     canJump = true;  // Allow jumping when player lands on the ground
                     isGripping = false;  // Release grip when player lands on the ground
                     grippedRectangle = null;  // Release reference to the gripped rectangle
+                    playerColor = initialPlayerColor;  // Reset player color to initial color
+ 
                 }
 
                 // Check for collision with the coin
                 if (x < coin.x + coin.size &&
                     x + 20 > coin.x &&
                     y < coin.y + coin.size &&
-                    y + 20 > coin.y) {
+                    y + 20 > coin.y &&
+                    playerColor == '#FFFF00' // Player color must be yellow to get coin
+                    ) {
+                    score += 1;
                     resetCoinPosition();  // Reset the coin position
                 }
 
@@ -184,6 +238,22 @@
                     const player = { x: x, y: y, width: 20, height: 20 };
                     const rect = { x: rectangle.x, y: rectangle.y, width: rectangle.width, height: rectangle.height };
                     if (isColliding(player, rect)) {
+                        // Change the player color to the color of the rectangle it collided with
+                        playerColor = rectangle.color;
+                        
+                        if (playerColor === '#FF0000'){
+                        }
+                        else if (playerColor === '#FFFF00'){
+                        }
+                        else if (playerColor === '#0000FF'){ //blue
+                            jumpStrength = invertedGravity ? 10 : -10;
+                            invertedGravity = !invertedGravity;
+
+                        }
+                        else if (playerColor === '#FFF'){
+                        }
+                        // ['#FF0000' Red, '#FFFF00' Yellow, '#0000FF', Blue]
+
                         // Determine the direction of the collision
                         const playerBottom = player.y + player.height;
                         const playerRight = player.x + player.width;
@@ -213,18 +283,22 @@
                         else if (lCollision < rCollision && lCollision < tCollision && lCollision < bCollision) {
                             x = rect.x - player.width;
                             dx = 0;  // Reset horizontal velocity
-                            rectangle.dx = speed;  // Push the rectangle
+                            if (!isGripping || rectangle !== grippedRectangle) {
+                                rectangle.dx = speed;  // Push the rectangle
+                            }
                         }
                         // Collision from the right
                         else if (rCollision < lCollision && rCollision < tCollision && rCollision < bCollision) {
                             x = rect.x + rect.width;
                             dx = 0;  // Reset horizontal velocity
-                            rectangle.dx = -speed;  // Push the rectangle
+                            if (!isGripping || rectangle !== grippedRectangle) {
+                                rectangle.dx = -speed;  // Push the rectangle
+                            }
                         }
                     } else if (isGripping && rectangle === grippedRectangle) {
                         // Move the gripped rectangle with the player
-                        rectangle.x += dx;
-                        rectangle.y += vy;
+                        rectangle.x = x;
+                        rectangle.y = y + 20;  // Keep the rectangle below the player
                     } else {
                         rectangle.dx = 0;
                     }
@@ -236,7 +310,7 @@
             function handleKeyDown(e) {
                 switch(e.key) {
                     case 'w':
-                        if (canJump && (y >= canvas.height - 20 || vy === 0)) {  // Jump only if on the ground or when vertical velocity is zero
+                        if (canJump && ((invertedGravity && y <= 0) || (!invertedGravity && y >= canvas.height - 20) || vy === 0)) {
                             vy = jumpStrength;
                             canJump = false;  // Prevent double jumping
                             setTimeout(() => { canJump = true; }, jumpCooldown);  // Reset jump flag after cooldown
@@ -263,9 +337,6 @@
                         if (y >= canvas.height - 20) {  // Allow falling when jump key is released
                             vy = gravity;
                         }
-                        break;
-                    case 's':
-                        vy = gravity;
                         break;
                     case 'a':
                     case 'd':
