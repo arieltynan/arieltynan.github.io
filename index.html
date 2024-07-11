@@ -214,13 +214,11 @@
                     isGripping = false;  // Release grip when player lands on the ground
                     grippedRectangle = null;  // Release reference to the gripped rectangle
                     playerColor = initialPlayerColor;  // Reset player color to initial color
-                    speed = 5
-                    jumpStrength = -10
                     if (y > canvas.height - 20) {
                         y  = canvas.height - 20;
                     }
-                    else if (y < 0) {
-                        y  = 0;
+                    else if (y < -20) {
+                        y  = -20;
                     }
  
                 }
