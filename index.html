@@ -208,8 +208,7 @@
                 if (x < 0) x = 0;
                 if (x > canvas.width - 20) x = canvas.width - 20;
                 if (y < 0) y = 0;
-                if (y > canvas.height - 20) {
-                    y = canvas.height - 20;
+                if (y > canvas.height - 20 || y < canvas.height + 20 ) {
                     vy = 0;  // Reset vertical velocity when on the ground
                     canJump = true;  // Allow jumping when player lands on the ground
                     isGripping = false;  // Release grip when player lands on the ground
@@ -217,6 +216,12 @@
                     playerColor = initialPlayerColor;  // Reset player color to initial color
                     speed = 5
                     jumpStrength = -10
+                    if (y > canvas.height - 20) {
+                        y  = canvas.height - 20;
+                    }
+                    else if (y > canvas.height - 20) {
+                        y  = canvas.height + 20;
+                    }
  
                 }
 
@@ -258,6 +263,7 @@
                         else if (playerColor === '#FFF'){
                             speed = 5;
                             jumpStrength = -10;
+                            invertedGravity = false;
                         }
                         // ['#FF0000' Red, '#FFFF00' Yellow, '#0000FF', Blue]
 
