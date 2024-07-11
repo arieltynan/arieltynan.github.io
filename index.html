@@ -208,7 +208,7 @@
                 if (x < 0) x = 0;
                 if (x > canvas.width - 20) x = canvas.width - 20;
                 if (y < 0) y = 0;
-                if (y > canvas.height - 20 || y <= -20 ) {
+                if (y > canvas.height - 20 || y <= -19 ) {
                     vy = 0;  // Reset vertical velocity when on the ground
                     canJump = true;  // Allow jumping when player lands on the ground
                     isGripping = false;  // Release grip when player lands on the ground
