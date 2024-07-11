@@ -208,17 +208,18 @@
                 if (x < 0) x = 0;
                 if (x > canvas.width - 20) x = canvas.width - 20;
                 if (y < 0) y = 0;
-                if (y > canvas.height - 20 || y < 0 ) {
+                if (y > canvas.height - 20 || y < -20 ) {
                     vy = 0;  // Reset vertical velocity when on the ground
                     canJump = true;  // Allow jumping when player lands on the ground
                     isGripping = false;  // Release grip when player lands on the ground
                     grippedRectangle = null;  // Release reference to the gripped rectangle
                     playerColor = initialPlayerColor;  // Reset player color to initial color
+                    let invertedGravity = false;
                     if (y > canvas.height - 20) {
                         y  = canvas.height - 20;
                     }
-                    else if (y < 0) {
-                        y  = 0;
+                    else if (y < -20) {
+                        y  = -20;
                     }
  
                 }
