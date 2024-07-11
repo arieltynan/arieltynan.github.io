@@ -249,7 +249,7 @@
                             invertedGravity = false;
                         }
                         else if (playerColor === '#0000FF'){ //blue
-                            jumpStrength = 10;
+                            jumpStrength = invertedGravity ? 10 : -10;
                             invertedGravity = true;
 
                         }
