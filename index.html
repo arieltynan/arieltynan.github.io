@@ -50,6 +50,7 @@
             let grippedRectangle = null;  // Reference to the gripped rectangle
             const initialPlayerColor = '#FFF';  // Initial player color
             let playerColor = initialPlayerColor;  // Current player color
+            let invertedGravity = false;
 
             // Define an array to hold rectangle objects
             const rectangles = [];
@@ -168,8 +169,8 @@
                     ctx.fillStyle = rectangle.color;  // Set the rectangle color
                     ctx.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 
-                    // Apply gravity to the rectangle
-                    rectangle.vy += gravity;
+                    const currentGravity = invertedGravity ? -gravity : gravity;
+                    rectangle.vy += currentGravity;
                     rectangle.y += rectangle.vy;
 
                     // Implement boundaries for the rectangle
@@ -199,7 +200,8 @@
                 x += dx;
 
                 // Apply gravity to player
-                vy += gravity;
+                const currentGravity = invertedGravity ? -gravity : gravity;
+                vy += currentGravity;
                 y += vy;
 
                 // Implement boundaries for player
