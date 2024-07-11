@@ -212,6 +212,7 @@
                     vy = 0;  // Reset vertical velocity when hitting the upper boundary
                     canJump = true;  // Allow jumping when player hits the upper boundary
                     playerColor = initialPlayerColor;  // Reset player color to initial color
+                    let invertedGravity = false;
                 } else if (y > canvas.height - 20) {
                     y = canvas.height - 20;
                     vy = 0;  // Reset vertical velocity when on the ground
