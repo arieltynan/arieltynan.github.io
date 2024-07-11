@@ -212,7 +212,6 @@
                     vy = 0;  // Reset vertical velocity when hitting the upper boundary
                     canJump = true;  // Allow jumping when player hits the upper boundary
                     playerColor = initialPlayerColor;  // Reset player color to initial color
-                    let invertedGravity = false;
                 } else if (y > canvas.height - 20) {
                     y = canvas.height - 20;
                     vy = 0;  // Reset vertical velocity when on the ground
@@ -220,7 +219,6 @@
                     isGripping = false;  // Release grip when player lands on the ground
                     grippedRectangle = null;  // Release reference to the gripped rectangle
                     playerColor = initialPlayerColor;  // Reset player color to initial color
-                    let invertedGravity = false;
  
                 }
 
@@ -246,23 +244,20 @@
                         if (playerColor === '#FF0000'){
                             speed = 10;
                             jumpStrength = -10;
-                            invertedGravity = false; // Ensure gravity is not inverted for red block //
                         }
                         else if (playerColor === '#FFFF00'){
                             speed = 5;
                             jumpStrength = -10;
-                            invertedGravity = false;  // Ensure gravity is not inverted for yellow block //
                         }
                         else if (playerColor === '#0000FF'){ //blue
                             jumpStrength = invertedGravity ? 10 : -10;
                             jumpStrength = 10
-                            invertedGravity = true;
+                            invertedGravity = !invertedGravity;
 
                         }
                         else if (playerColor === '#FFF'){
                             speed = 5;
                             jumpStrength = -10;
-                            invertedGravity = false;
                         }
                         // ['#FF0000' Red, '#FFFF00' Yellow, '#0000FF', Blue]
 
